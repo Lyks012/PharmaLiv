@@ -1,0 +1,17 @@
+clients(client_id, first_name, last_name, genre, adress, birth_date, email, phone_number, ongoing_treatment, login, password, path_to_health_insurance)
+
+drugstores(drugstore_id, name, email, phone_number, owner_name, opening_hours, login, password, sector_id)
+
+drugs(drug_id, name, price, description, number_of_time_ordered)
+
+delivery_people(delivery_people_id, first_name, last_name, phone_number, login, password)
+
+orders(order_id, price, payment_method, drugstore_id, client_id, delivery_people_id, prescription_id)
+
+prescriptions(prescription_id, path_to_picture, client_id)
+
+order_drugs(order_id, drug_id)
+
+sector(sector_id, name)
+
+delivery_sector(delivery_people_id, sector_id)
