@@ -5,6 +5,10 @@
         "symfony/cache": "^5.3"
     },
     "autoload": {
-        "psr-0": {"": "src/entities/"}
+        "psr-4": {
+            "App\\Entities\\": "src/entities",
+            "App\\Router\\": "src/router",
+            "App\\Controller\\": "src/controller"
+        }
     }
 }
