@@ -1,1 +1,9 @@
-style...
+.bg-overlay {
+    background: linear-gradient(rgba(63, 73, 62, 0.356), rgba(8, 46, 11, 0.863)), url("../images/imagePharmacie.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    color: #fff;
+    height: 350px;
+    padding-top: 50px;
+}
