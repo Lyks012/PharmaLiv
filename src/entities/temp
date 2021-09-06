@@ -1,0 +1,10 @@
+namespace App\Entities;
+
+use Doctrine\ORM\Mapping as ORM;
+
+require_once("src/utils/hydratation.php");
+    
+    public function __construct($data)
+    {
+        $this->hydrate($data);
+    }
