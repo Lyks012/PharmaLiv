@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use Doctrine\DBAL\Types\ArrayType;
+use Exception;
 
 class HomeController extends Controller
 {
@@ -11,7 +12,7 @@ class HomeController extends Controller
         $this->load('home/home');
     }
     
-    public function inscription()
+    public function registerPage()
     {
 
         $query = $this->entityManager->createQuery('Select s.id, s.ville, s.commune FROM \App\Entities\Sector s');
@@ -20,44 +21,66 @@ class HomeController extends Controller
         $this->load('home/inscription', $data);
     }
     
-    public function connexion()
+    public function loginPage()
     {
         $this->load('home/connexion');
     }
 
-    /*public function registerClient()
+    public function registerClient()
     {
-        $client = new \App\Entities\Client($_POST);
-        $this->entityManager->persist($client);
+        $entity = new \App\Entities\Client($_POST);
+
+        $this->entityManager->persist($entity);
         $this->entityManager->flush();
+        $this->load('home/connexion');
+        
     }
 
-    public function registerDeliveryPeople()
-    {
-        $deliveryPeople = new \App\Entities\DeliveryPeople($_POST);
-        $this->entityManager->persist($deliveryPeople);
-        $this->entityManager->flush();
-    }
-    
     public function registerDrugstore()
     {
-        $drugstore = new \App\Entities\Drugstore($_POST);
-        $this->entityManager->persist($drugstore);
-        $this->entityManager->flush();
-    }*/
-
-    public function register()
-    {
-        $availabeEntities = array('Drugstore', 'Client', 'DeliveryPeople');
-
-        if(in_array($_GET['entity'], $availabeEntities)){
-            $className = "\\App\\Entities\\".$_GET['entity'];
-            $entity = new $className($_POST);
-
-            $this->entityManager->persist($entity);
-            $this->entityManager->flush();
-        }
-
+        $sector = $this->entityManager->find("\\App\Entities\\Sector", $_POST['sector_id']);
         
+        $_POST['sector'] = $sector;
+
+        $entity = new \App\Entities\Drugstore($_POST);
+
+        $this->entityManager->persist(($entity));
+        $this->entityManager->flush();
+        $this->load('home/connexion');
+    }
+
+    private function tryAuth($authInfos)
+    {
+        $loginWith = filter_var($authInfos['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'login';
+        
+        $user = $this->entityManager->getRepository("\\App\\Entities\\".$authInfos['userType'])
+                                    ->findOneBy(
+                                        array(
+                                            $loginWith => $authInfos['login'],
+                                            "password" => $authInfos['password']
+                                        )
+                                    );
+
+        if($user)
+        {
+            return $user;
+        }
+        
+        throw new Exception("Mauvais login ou mot de passe");
+
+    }
+
+    private function setSessionVariables($user, $userType)
+    {
+        session_start();
+        $_SESSION['userType'] = $userType;
+        $_SESSION['id'] = $user->getId();
+        $_SESSION['login'] = $user->getLogin();
+    }
+
+    public function login(){
+        $user = $this->tryAuth($_POST);
+        $this->setSessionVariables($user, $_POST['userType']);
+        $this->load('client/home');
     }
 }
